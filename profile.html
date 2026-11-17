@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile | FarmLink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="nav-bar">
+    <h1 class="logo">Farm<span>Link</span></h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="consumer.html">Consumer</a>
+      <a href="profile.html" class="active">Profile</a>
+      <a href="farmer.html">Farmer</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="page-banner">
+    <h2>My Profile</h2>
+    <p>Save your details once and use them for every order</p>
+  </section>
+
+  <section class="page-section">
+    <div class="two-col">
+
+      <div class="card">
+        <h3>✏️ Edit Profile</h3><br>
+
+        <div class="form-row">
+          <label for="pName">Full name</label>
+          <input type="text" id="pName" placeholder="e.g. Ravi Kumar">
+        </div>
+        <div class="form-row">
+          <label for="pType">I am a</label>
+          <select id="pType">
+            <option>Family</option>
+            <option>Apartment society</option>
+            <option>Restaurant</option>
+            <option>Store</option>
+            <option>Bulk buyer</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="pPhone">Phone number</label>
+          <input type="tel" id="pPhone" placeholder="10-digit number">
+        </div>
+        <div class="form-row">
+          <label for="pEmail">Email</label>
+          <input type="email" id="pEmail" placeholder="e.g. name@example.com">
+        </div>
+        <div class="form-row">
+          <label for="pArea">Delivery address / society</label>
+          <input type="text" id="pArea" placeholder="e.g. Green Valley Apartments, Bengaluru">
+        </div>
+        <div class="form-row">
+          <label for="pTime">Preferred daily delivery time</label>
+          <select id="pTime">
+            <option>6 AM - 9 AM</option>
+            <option>9 AM - 12 PM</option>
+            <option>4 PM - 7 PM</option>
+          </select>
+        </div>
+
+        <button class="btn btn-green" onclick="saveProfile()">Save profile</button>
+        <button class="btn btn-primary" onclick="clearProfile()">Clear all</button>
+        <p class="message" id="profMsg"></p>
+      </div>
+
+      <div class="card">
+        <div class="avatar" id="avatar">?</div>
+        <h3 class="profile-name" id="sName">No profile yet</h3>
+        <p class="profile-type"><span class="type-badge" id="sType">-</span></p>
+        <div class="profile-line"><span>📞 Phone</span><span id="sPhone">-</span></div>
+        <div class="profile-line"><span>✉️ Email</span><span id="sEmail">-</span></div>
+        <div class="profile-line"><span>📍 Delivery area</span><span id="sArea">-</span></div>
+        <div class="profile-line"><span>⏰ Delivery time</span><span id="sTime">-</span></div>
+        <p class="pay-note">Saved only in this browser. Nothing is sent to a server.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="page-section">
+    <h3 style="margin-bottom:12px;">🧾 Order History</h3>
+    <table>
+      <thead>
+        <tr><th>Order ID</th><th>Date</th><th>Items</th><th>Payment</th><th>Total</th></tr>
+      </thead>
+      <tbody id="orderBody">
+        <tr><td colspan="5">No orders yet. Place an order on the Consumer page.</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer><p>&copy; 2026 FarmLink | HTML Project</p></footer>
+
+<script>
+  function getProfile() {
+    try { return JSON.parse(localStorage.getItem("farmlinkProfile")); }
+    catch (e) { return null; }
+  }
+
+  function getOrders() {
+    try { return JSON.parse(localStorage.getItem("farmlinkOrders")) || []; }
+    catch (e) { return []; }
+  }
+
+  function saveProfile() {
+    const name = document.getElementById("pName").value.trim();
+    const phone = document.getElementById("pPhone").value.trim();
+    const area = document.getElementById("pArea").value.trim();
+    const msg = document.getElementById("profMsg");
+
+    if (name === "" || area === "") {
+      msg.textContent = "Please enter your name and delivery address.";
+      return;
+    }
+    if (phone !== "" && !/^[0-9]{10}$/.test(phone)) {
+      msg.textContent = "Phone number must be exactly 10 digits.";
+      return;
+    }
+
+    const profile = {
+      name: name,
+      type: document.getElementById("pType").value,
+      phone: phone,
+      email: document.getElementById("pEmail").value.trim(),
+      area: area,
+      time: document.getElementById("pTime").value
+    };
+    localStorage.setItem("farmlinkProfile", JSON.stringify(profile));
+    msg.textContent = "Profile saved!";
+    showProfile();
+  }
+
+  function showProfile() {
+    const p = getProfile();
+    if (!p) { return; }
+    document.getElementById("avatar").textContent = p.name.charAt(0).toUpperCase();
+    document.getElementById("sName").textContent = p.name;
+    document.getElementById("sType").textContent = p.type;
+    document.getElementById("sPhone").textContent = p.phone || "-";
+    document.getElementById("sEmail").textContent = p.email || "-";
+    document.getElementById("sArea").textContent = p.area;
+    document.getElementById("sTime").textContent = p.time;
+  }
+
+  function fillForm() {
+    const p = getProfile();
+    if (!p) { return; }
+    document.getElementById("pName").value = p.name;
+    document.getElementById("pType").value = p.type;
+    document.getElementById("pPhone").value = p.phone;
+    document.getElementById("pEmail").value = p.email;
+    document.getElementById("pArea").value = p.area;
+    document.getElementById("pTime").value = p.time;
+  }
+
+  function showOrders() {
+    const orders = getOrders();
+    const body = document.getElementById("orderBody");
+    if (orders.length === 0) { return; }
+    body.innerHTML = "";
+    orders.slice().reverse().forEach(function (o) {
+      const row = document.createElement("tr");
+      [o.id, o.date, o.items, o.method, "₹" + o.total].forEach(function (text) {
+        const cell = document.createElement("td");
+        cell.textContent = text;
+        row.appendChild(cell);
+      });
+      body.appendChild(row);
+    });
+  }
+
+  function clearProfile() {
+    localStorage.removeItem("farmlinkProfile");
+    localStorage.removeItem("farmlinkOrders");
+    location.reload();
+  }
+
+  fillForm();
+  showProfile();
+  showOrders();
+</script>
+
+</body>
+</html>

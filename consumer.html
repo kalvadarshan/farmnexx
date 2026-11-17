@@ -14,6 +14,7 @@
     <nav>
       <a href="index.html">Home</a>
       <a href="consumer.html" class="active">Consumer</a>
+      <a href="profile.html">Profile</a>
       <a href="farmer.html">Farmer</a>
     </nav>
   </div>
@@ -23,6 +24,7 @@
   <section class="page-banner">
     <h2>Fresh Produce</h2>
     <p>Search, add to cart and pay with a demo checkout</p>
+    <p class="welcome-text" id="welcome"></p>
   </section>
 
   <section class="page-section">
@@ -72,6 +74,7 @@
         <div class="form-row">
           <label for="area">Society / delivery area</label>
           <input type="text" id="area" placeholder="e.g. Green Valley Apartments">
+          <p class="pay-note">Tip: save it once on the <a href="profile.html" style="color:var(--green);font-weight:700;">Profile</a> page.</p>
         </div>
 
         <p class="pay-title">💳 Payment method <span class="demo-badge">DEMO</span></p>
@@ -106,6 +109,34 @@
 
 <script>
   let cart = {};
+
+  function getProfile() {
+    try { return JSON.parse(localStorage.getItem("farmlinkProfile")); }
+    catch (e) { return null; }
+  }
+
+  function loadProfileIntoPage() {
+    const p = getProfile();
+    if (!p) { return; }
+    document.getElementById("area").value = p.area;
+    document.getElementById("welcome").textContent =
+      "Welcome back, " + p.name + "! Daily delivery time: " + p.time;
+  }
+
+  function saveOrder(orderId, method, total, area, itemsText) {
+    let orders = [];
+    try { orders = JSON.parse(localStorage.getItem("farmlinkOrders")) || []; }
+    catch (e) { orders = []; }
+    orders.push({
+      id: orderId,
+      date: new Date().toLocaleDateString("en-IN"),
+      items: itemsText,
+      method: method,
+      total: total,
+      area: area
+    });
+    localStorage.setItem("farmlinkOrders", JSON.stringify(orders));
+  }
 
   function addToCart(name, price) {
     if (cart[name]) {
@@ -191,7 +222,11 @@
     btn.disabled = true;
     msg.textContent = method === "Cash on Delivery" ? "Placing your order..." : "Processing payment...";
 
-    // setTimeout waits 1.5 seconds to act like a real payment being processed
+    // make a short text like "Tomato × 2, Mango × 1" for the order history
+    const itemsText = Object.keys(cart).map(function (name) {
+      return name + " × " + cart[name].qty;
+    }).join(", ");
+
     setTimeout(function () {
       const orderId = "FL" + Math.floor(100000 + Math.random() * 900000);
       const status = method === "Cash on Delivery" ? "Pay ₹" + total + " on delivery" : "Paid ₹" + total + " (demo)";
@@ -204,6 +239,8 @@
         'Status: ' + status + '<br>' +
         'Delivery to: ' + area + ' at the daily fixed time' +
         '</div>';
+
+      saveOrder(orderId, method, total, area, itemsText);
 
       msg.textContent = "";
       cart = {};
@@ -219,7 +256,8 @@
     });
   });
 
-  choosePay();   // set the starting state when the page loads
+  choosePay();
+  loadProfileIntoPage();
 </script>
 
 </body>

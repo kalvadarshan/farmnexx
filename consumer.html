@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consumer | FarmLink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="nav-bar">
+    <h1 class="logo">Farm<span>Link</span></h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="consumer.html" class="active">Consumer</a>
+      <a href="farmer.html">Farmer</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="page-banner">
+    <h2>Fresh Produce</h2>
+    <p>Search, add to cart and place a demo order</p>
+  </section>
+
+  <section class="page-section">
+    <div class="shop-layout">
+
+      <div>
+        <input type="text" id="search" placeholder="Search tomato, mango, potato..." style="margin-bottom:24px;">
+        <div class="grid">
+          <div class="card product">
+            <div class="emoji">🍅</div><h3>Tomato</h3>
+            <p class="price">₹30 / kg</p>
+            <button class="btn btn-green" onclick="addToCart('Tomato', 30)">Add to cart</button>
+          </div>
+          <div class="card product">
+            <div class="emoji">🥭</div><h3>Mango</h3>
+            <p class="price">₹90 / kg</p>
+            <button class="btn btn-green" onclick="addToCart('Mango', 90)">Add to cart</button>
+          </div>
+          <div class="card product">
+            <div class="emoji">🥔</div><h3>Potato</h3>
+            <p class="price">₹25 / kg</p>
+            <button class="btn btn-green" onclick="addToCart('Potato', 25)">Add to cart</button>
+          </div>
+          <div class="card product">
+            <div class="emoji">🧅</div><h3>Onion</h3>
+            <p class="price">₹35 / kg</p>
+            <button class="btn btn-green" onclick="addToCart('Onion', 35)">Add to cart</button>
+          </div>
+          <div class="card product">
+            <div class="emoji">🥕</div><h3>Carrot</h3>
+            <p class="price">₹40 / kg</p>
+            <button class="btn btn-green" onclick="addToCart('Carrot', 40)">Add to cart</button>
+          </div>
+          <div class="card product">
+            <div class="emoji">🍌</div><h3>Banana</h3>
+            <p class="price">₹45 / kg</p>
+            <button class="btn btn-green" onclick="addToCart('Banana', 45)">Add to cart</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card cart-box">
+        <h3>🛒 Your Cart (<span id="cartCount">0</span> items)</h3>
+        <div id="cartList"><p>Your cart is empty.</p></div>
+        <p class="cart-total">Total: ₹<span id="cartTotal">0</span></p>
+        <div class="form-row">
+          <label for="area">Society / delivery area</label>
+          <input type="text" id="area" placeholder="e.g. Green Valley Apartments">
+        </div>
+        <button class="btn btn-primary" onclick="placeOrder()">Place demo order</button>
+        <button class="btn btn-green" onclick="clearCart()">Clear</button>
+        <p class="message" id="orderMsg"></p>
+      </aside>
+
+    </div>
+  </section>
+</main>
+
+<footer><p>&copy; 2026 FarmLink | HTML Project</p></footer>
+
+<script>
+  let cart = {};   // stores items like { Tomato: { price: 30, qty: 2 } }
+
+  function addToCart(name, price) {
+    if (cart[name]) {
+      cart[name].qty = cart[name].qty + 1;
+    } else {
+      cart[name] = { price: price, qty: 1 };
+    }
+    showCart();
+  }
+
+  function showCart() {
+    let html = "";
+    let total = 0;
+    let items = 0;
+    for (const name in cart) {
+      const item = cart[name];
+      total = total + item.price * item.qty;
+      items = items + item.qty;
+      html = html + '<div class="cart-item"><span>' + name + ' × ' + item.qty +
+             '</span><span>₹' + (item.price * item.qty) + '</span></div>';
+    }
+    document.getElementById("cartList").innerHTML = html || "<p>Your cart is empty.</p>";
+    document.getElementById("cartTotal").textContent = total;
+    document.getElementById("cartCount").textContent = items;
+  }
+
+  function clearCart() {
+    cart = {};
+    showCart();
+    document.getElementById("orderMsg").textContent = "";
+  }
+
+  function placeOrder() {
+    const area = document.getElementById("area").value.trim();
+    const msg = document.getElementById("orderMsg");
+    if (Object.keys(cart).length === 0) {
+      msg.textContent = "Please add some items first.";
+      return;
+    }
+    if (area === "") {
+      msg.textContent = "Please enter your society or delivery area.";
+      return;
+    }
+    msg.textContent = "Demo order placed! Delivery to " + area + " at the daily fixed time.";
+    cart = {};
+    showCart();
+  }
+
+  document.getElementById("search").addEventListener("input", function () {
+    const text = this.value.toLowerCase();
+    document.querySelectorAll(".product").forEach(function (item) {
+      item.style.display = item.textContent.toLowerCase().includes(text) ? "" : "none";
+    });
+  });
+</script>
+
+</body>
+</html>

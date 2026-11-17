@@ -1,0 +1,183 @@
+/* ===== Colours and basic setup ===== */
+:root {
+  --green: #2e7d4f;
+  --dark: #123524;
+  --light: #eef5ea;
+  --orange: #f2a33a;
+  --text: #1b2a22;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  color: var(--text);
+  background: #f8fbf6;
+  line-height: 1.6;
+}
+a { text-decoration: none; }
+
+/* ===== Header and menu ===== */
+header {
+  background: var(--dark);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+.nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 20px;
+}
+.logo { color: #fff; font-size: 1.6rem; font-weight: 700; }
+.logo span { color: var(--orange); }
+nav a {
+  color: #d8e8d2;
+  margin-left: 20px;
+  padding: 6px 2px;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+}
+nav a:hover, nav a.active { color: #fff; border-bottom-color: var(--orange); }
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-block;
+  padding: 12px 26px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 6px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn:hover { transform: translateY(-3px); }
+.btn-primary { background: var(--orange); color: var(--text); }
+.btn-green { background: var(--green); color: #fff; }
+.btn-outline { border: 2px solid #fff; color: #fff; background: transparent; }
+
+/* ===== Hero (big banner on home page) ===== */
+.hero {
+  background: linear-gradient(135deg, #123524, #2e7d4f);
+  color: #fff;
+  text-align: center;
+  padding: 90px 20px 100px;
+}
+.hero h2 { font-size: 2.6rem; margin-bottom: 14px; }
+.hero p { font-size: 1.2rem; max-width: 620px; margin: 0 auto 28px; color: #e3f1dc; }
+
+/* ===== Small stats strip ===== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  max-width: 1100px;
+  margin: -45px auto 0;
+  padding: 0 20px;
+  position: relative;
+}
+.stat {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+.stat strong { display: block; font-size: 1.5rem; color: var(--green); }
+
+/* ===== Sections and cards ===== */
+.page-section { max-width: 1100px; margin: 0 auto; padding: 60px 20px 20px; }
+.section-title { text-align: center; font-size: 2rem; color: var(--dark); }
+.section-sub { text-align: center; color: #5b6b61; margin-bottom: 32px; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 22px;
+}
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+  transition: 0.25s;
+}
+.card:hover { transform: translateY(-6px); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.13); }
+.card .icon { font-size: 2.4rem; margin-bottom: 8px; }
+.step-num {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* ===== Page banner (consumer and farmer pages) ===== */
+.page-banner { background: var(--light); padding: 40px 20px; text-align: center; }
+.page-banner h2 { font-size: 2rem; color: var(--dark); }
+
+/* ===== Forms ===== */
+label { display: block; font-weight: 600; margin-bottom: 6px; }
+input, select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid #d5e4d0;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fff;
+}
+input:focus, select:focus { outline: none; border-color: var(--green); }
+.form-row { margin-bottom: 16px; }
+.message { margin-top: 12px; font-weight: 600; color: var(--green); }
+
+/* ===== Consumer page ===== */
+.shop-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+.product { text-align: center; }
+.product .emoji { font-size: 3.5rem; }
+.price { color: var(--green); font-weight: 700; font-size: 1.2rem; margin: 6px 0 12px; }
+.cart-box { position: sticky; top: 90px; align-self: start; }
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5eee1;
+}
+.cart-total { font-weight: 700; font-size: 1.2rem; margin: 14px 0; }
+
+/* ===== Farmer page ===== */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+/* ===== Tables ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+th { background: var(--green); color: #fff; text-align: left; padding: 12px; }
+td { padding: 12px; border-bottom: 1px solid #e5eee1; }
+tr:hover td { background: var(--light); }
+
+/* ===== Footer ===== */
+footer {
+  background: var(--dark);
+  color: #cfe3c8;
+  text-align: center;
+  padding: 26px 20px;
+  margin-top: 50px;
+}
+
+/* ===== Mobile screens ===== */
+@media (max-width: 800px) {
+  .shop-layout, .two-col { grid-template-columns: 1fr; }
+  .hero h2 { font-size: 2rem; }
+  .nav-bar { flex-direction: column; gap: 8px; }
+  nav a { margin: 0 10px; }
+  .cart-box { position: static; }
+}

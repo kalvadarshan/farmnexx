@@ -22,7 +22,7 @@
 <main>
   <section class="page-banner">
     <h2>Fresh Produce</h2>
-    <p>Search, add to cart and place a demo order</p>
+    <p>Search, add to cart and pay with a demo checkout</p>
   </section>
 
   <section class="page-section">
@@ -68,23 +68,44 @@
         <h3>🛒 Your Cart (<span id="cartCount">0</span> items)</h3>
         <div id="cartList"><p>Your cart is empty.</p></div>
         <p class="cart-total">Total: ₹<span id="cartTotal">0</span></p>
+
         <div class="form-row">
           <label for="area">Society / delivery area</label>
           <input type="text" id="area" placeholder="e.g. Green Valley Apartments">
         </div>
-        <button class="btn btn-primary" onclick="placeOrder()">Place demo order</button>
+
+        <p class="pay-title">💳 Payment method <span class="demo-badge">DEMO</span></p>
+
+        <label class="pay-option selected" id="opt-upi">
+          <input type="radio" name="pay" value="UPI" checked onchange="choosePay()"> 📱 UPI
+        </label>
+        <label class="pay-option" id="opt-card">
+          <input type="radio" name="pay" value="Card" onchange="choosePay()"> 💳 Debit / Credit Card
+        </label>
+        <label class="pay-option" id="opt-cod">
+          <input type="radio" name="pay" value="Cash on Delivery" onchange="choosePay()"> 💵 Cash on Delivery
+        </label>
+
+        <div class="form-row" id="upiBox">
+          <label for="upiId">UPI ID</label>
+          <input type="text" id="upiId" placeholder="e.g. name@upi">
+        </div>
+        <p class="pay-note" id="payNote"></p>
+
+        <button class="btn btn-primary" id="payBtn" onclick="payNow()">Pay &amp; place order</button>
         <button class="btn btn-green" onclick="clearCart()">Clear</button>
         <p class="message" id="orderMsg"></p>
+        <div id="receipt"></div>
       </aside>
 
     </div>
   </section>
 </main>
 
-<footer><p>&copy; 2026 FarmLink | HTML Project</p></footer>
+<footer><p>&copy; 2026 FarmLink | HTML Project | Demo payments only</p></footer>
 
 <script>
-  let cart = {};   // stores items like { Tomato: { price: 30, qty: 2 } }
+  let cart = {};
 
   function addToCart(name, price) {
     if (cart[name]) {
@@ -95,19 +116,23 @@
     showCart();
   }
 
+  function getTotal() {
+    let total = 0;
+    for (const name in cart) { total = total + cart[name].price * cart[name].qty; }
+    return total;
+  }
+
   function showCart() {
     let html = "";
-    let total = 0;
     let items = 0;
     for (const name in cart) {
       const item = cart[name];
-      total = total + item.price * item.qty;
       items = items + item.qty;
       html = html + '<div class="cart-item"><span>' + name + ' × ' + item.qty +
              '</span><span>₹' + (item.price * item.qty) + '</span></div>';
     }
     document.getElementById("cartList").innerHTML = html || "<p>Your cart is empty.</p>";
-    document.getElementById("cartTotal").textContent = total;
+    document.getElementById("cartTotal").textContent = getTotal();
     document.getElementById("cartCount").textContent = items;
   }
 
@@ -115,11 +140,36 @@
     cart = {};
     showCart();
     document.getElementById("orderMsg").textContent = "";
+    document.getElementById("receipt").innerHTML = "";
   }
 
-  function placeOrder() {
+  function selectedMethod() {
+    return document.querySelector('input[name="pay"]:checked').value;
+  }
+
+  function choosePay() {
+    const method = selectedMethod();
+    document.getElementById("opt-upi").classList.toggle("selected", method === "UPI");
+    document.getElementById("opt-card").classList.toggle("selected", method === "Card");
+    document.getElementById("opt-cod").classList.toggle("selected", method === "Cash on Delivery");
+
+    document.getElementById("upiBox").style.display = method === "UPI" ? "block" : "none";
+
+    const note = document.getElementById("payNote");
+    if (method === "UPI") { note.textContent = "Demo only: enter any ID with @ in it. No real payment is made."; }
+    if (method === "Card") { note.textContent = "Demo only: no card details are asked or stored."; }
+    if (method === "Cash on Delivery") { note.textContent = "Pay in cash when the delivery arrives."; }
+
+    document.getElementById("payBtn").textContent =
+      method === "Cash on Delivery" ? "Place order" : "Pay & place order";
+  }
+
+  function payNow() {
     const area = document.getElementById("area").value.trim();
     const msg = document.getElementById("orderMsg");
+    const method = selectedMethod();
+    document.getElementById("receipt").innerHTML = "";
+
     if (Object.keys(cart).length === 0) {
       msg.textContent = "Please add some items first.";
       return;
@@ -128,9 +178,38 @@
       msg.textContent = "Please enter your society or delivery area.";
       return;
     }
-    msg.textContent = "Demo order placed! Delivery to " + area + " at the daily fixed time.";
-    cart = {};
-    showCart();
+    if (method === "UPI") {
+      const upi = document.getElementById("upiId").value.trim();
+      if (upi.indexOf("@") === -1) {
+        msg.textContent = "Please enter a valid UPI ID (it must contain @).";
+        return;
+      }
+    }
+
+    const total = getTotal();
+    const btn = document.getElementById("payBtn");
+    btn.disabled = true;
+    msg.textContent = method === "Cash on Delivery" ? "Placing your order..." : "Processing payment...";
+
+    // setTimeout waits 1.5 seconds to act like a real payment being processed
+    setTimeout(function () {
+      const orderId = "FL" + Math.floor(100000 + Math.random() * 900000);
+      const status = method === "Cash on Delivery" ? "Pay ₹" + total + " on delivery" : "Paid ₹" + total + " (demo)";
+
+      document.getElementById("receipt").innerHTML =
+        '<div class="success-box">' +
+        '<strong>✅ Order confirmed</strong><br>' +
+        'Order ID: ' + orderId + '<br>' +
+        'Payment: ' + method + '<br>' +
+        'Status: ' + status + '<br>' +
+        'Delivery to: ' + area + ' at the daily fixed time' +
+        '</div>';
+
+      msg.textContent = "";
+      cart = {};
+      showCart();
+      btn.disabled = false;
+    }, 1500);
   }
 
   document.getElementById("search").addEventListener("input", function () {
@@ -139,6 +218,8 @@
       item.style.display = item.textContent.toLowerCase().includes(text) ? "" : "none";
     });
   });
+
+  choosePay();   // set the starting state when the page loads
 </script>
 
 </body>
